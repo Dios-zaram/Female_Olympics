@@ -45,43 +45,42 @@ GROUP BY sex;
 
 --Compare Number of Sports from 2008-2016 and from 1896-2016
 SELECT 
-	COUNT(DISTINCT sport) after_year
+	COUNT(DISTINCT sport) playedSports
 FROM 
 	olympics_female
-WHERE year>=2006
+WHERE year>=2006 and sex = 'F'
 
 
 SELECT 
-	COUNT(DISTINCT sport) as before_year
+	COUNT(DISTINCT sport) as allSports
 FROM 
 	olympics_female
 WHERE 
-	year IS NOT NULL
+	year IS NOT NULL and sex='F'
 	
-WITH AllSports AS (
+WITH allSports AS (
     SELECT DISTINCT sport
     FROM olympics_female
+	WHERE sex ='F'
 )
 
-, PlayedSports AS (
+, playedSports AS (
     SELECT DISTINCT sport
     FROM olympics_female
-    WHERE year> 2006 
+    WHERE year> 2006 and sex = 'F'
 )
 
 SELECT sport
-FROM AllSports
-WHERE sport NOT IN (SELECT sport FROM PlayedSports);
+FROM allSports
+WHERE sport NOT IN (SELECT sport FROM playedSports);
 
 /*		OBSERVATION
-Based on the analysis, it is observed that there are 65 sports recorded from
-1896 to 2016. In contrast, from 2006 to 2016, there are records for 51 female 
-sports. Consequently, there are 14 sports that are not played during the period 
+Based on the analysis, it is observed that there are 52 sports recorded from
+1896 to 2016. In contrast, from 2006 to 2016, there are records for 49 female 
+sports. Consequently, there are 3 sports that are not played during the period 
 of 2006-2016. 
 
-Which include "Lacrosse", "Cricket", "Motorboating", "Basque Pelota",
-"Roque", "Military Ski Patrol", "Racquets", "Rugby", "Alpinism", "Jeu De Paume",
-"Polo", "Croquet", "Tug-Of-War", "Art Competitions"*/
+Which include "Alpinism", "Croquet", "Art Competitions"*/
 
 
 -- Delete Null values, Female  and values less than 2006
@@ -118,7 +117,7 @@ SELECT
 	COUNT(medal) 
 FROM 
 	olympics_female 
-WHERE sex='F' AND medal IS NOT NULL;
+WHERE medal IS NOT NULL;
 /*Number of female medalist from 2006-2016 are 844*/
 
 --year with the highest female medalist
@@ -127,19 +126,19 @@ SELECT
 FROM 
 	olympics_female
 WHERE 
-	medal IS NOT null AND sex='F'
+	medal IS NOT null
 GROUP BY YEAR 
 ORDER BY count DESC 
 LIMIT 5;
 /*Female have won more awards in 2016(246) the least was 2006 with (55)*/
 
 /*Central tendency of female height and weight*/
--- Find sample mean, median, mode, max, min variance and staandard deviation 
+-- Find sample mean, median, mode, max, min variance and standard deviation 
 -- for height
 SELECT 
 	ROUND(AVG(height)) mean, PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY height)
 	median, MODE() WITHIN GROUP (ORDER BY height), MAX(height), MIN(height),
-	VAR_SAMP(height), STDDEV_SAMP(height)
+	VAR_SAMP(height), STDDEV_SAMP(height), SQRT(COUNT(height))
 FROM
 	olympics_female
 	
